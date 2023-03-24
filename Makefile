@@ -6,3 +6,6 @@ test: parser-test
 parser-test: parse.cpp test.cpp
 	${CXX} $^ -o $@
 	./$@
+
+clean:
+	rm -f parser-test
