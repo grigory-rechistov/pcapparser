@@ -3,7 +3,7 @@
 #include <cstdint>
 #include<functional> 
 
-using ReadDword = std::function <uint32_t (FILE* stream)>; //auto (*)(FILE *stream) -> uint32_t;
+using ReadDword = std::function <uint32_t (FILE* stream)>;
 
 
 
