@@ -16,6 +16,7 @@
 } while (0);
 
 class TruncatedInput: public std::exception {};
+class BadMagic: public std::exception {};
 
 auto mock_read_truncated_header(FILE* stream) ->uint32_t {
     throw TruncatedInput();
@@ -33,8 +34,25 @@ static void test_parse_header_on_empty_should_throw() {
     EXPECT(truncation_detected,"Should not return normally on empty header");
 }
 
+auto mock_read_bad_magic_header(FILE* stream) ->uint32_t {
+    return 0xbaadc0de;
+}
+
+static void test_parse_header_on_bad_magic_should_throw() {
+    bool bad_magic_detected = false;
+    try {
+        parse_header(mock_read_bad_magic_header, nullptr);
+    } catch (const BadMagic) {
+        bad_magic_detected = true;
+    } catch (...) {
+        FAIL("Unexpected exception thrown");
+    }
+    EXPECT(bad_magic_detected,"Should have reported bad magic in header");
+}
+
 
 int main() {
     test_parse_header_on_empty_should_throw();
+    test_parse_header_on_bad_magic_should_throw();
     return 0;
 }
