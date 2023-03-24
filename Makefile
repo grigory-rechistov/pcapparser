@@ -2,6 +2,7 @@
 .PHONY: test
 test: parser-test
 
+# TODO set proper dependencies from headers
 parser-test: parse.cpp mock.cpp test.cpp
 	${CXX} $^ -o $@
 	./$@
