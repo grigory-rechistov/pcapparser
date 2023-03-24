@@ -5,6 +5,7 @@
 #include <array>
 #include "exc.h"
 #include "header.h"
+#include "bele.h"
 
 #define FAIL(reason) do {\
     printf("Expectation failed at %s:%d %s\n", __FILE__, __LINE__, (reason)); \
@@ -129,11 +130,17 @@ static void test_parse_header_on_zero_snap_len_throws() {
 
 // }
 
+static void test_reorder_u32() {
+    auto res = reorder_u32(0x11223344U);
+    EXPECT(res == 0x44332211U, "Octets are swapped");
+}
+
 int main() {
     test_parse_header_on_empty_should_throw();
     test_parse_header_on_bad_magic_should_throw();
     test_parse_header_reads_whole_header();
     test_parse_header_on_zero_snap_len_throws();
     // test_header_values_land_in_correct_places();
+    test_reorder_u32();
     return 0;
 }
