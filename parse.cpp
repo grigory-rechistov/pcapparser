@@ -16,6 +16,9 @@ void parse_header( ReadDword dword_reader, FILE *f) {
     uint32_t reserved1 = dword_reader(f);
     uint32_t reserved2 = dword_reader(f);
     uint32_t snap_len = dword_reader(f);
+    if (snap_len == 0) {
+        throw ValueOutOfRange();
+    }
     uint32_t fcs_f_link_type = dword_reader(f);
 
 }
