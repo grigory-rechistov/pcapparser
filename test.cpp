@@ -7,6 +7,7 @@
 #include "exc.h"
 #include "header.h"
 #include "bele.h"
+#include "packet.h"
 
 #define FAIL(reason) do {\
     printf("Expectation failed at %s:%d %s\n", __FILE__, __LINE__, (reason)); \
@@ -151,6 +152,18 @@ static void test_parsed_header_is_properly_dumped() {
     }
 }
 
+static void test_parse_packet_record_on_empty_header_returns_incomplete() {
+    PacketRecord pr;
+    try {
+        pr.parse(mock_read_truncated_header, nullptr);
+    } catch (const TruncatedInput) {
+        FAIL("Should turn TruncatedInput to incomplete");
+    } catch (...) {
+        FAIL("Unexpected exception thrown");
+    }
+    EXPECT(pr.is_incomplete(),"Should be marked as incomplete");
+}
+
 int main() {
     test_parse_header_on_empty_should_throw();
     test_parse_header_on_bad_magic_should_throw();
@@ -159,5 +172,6 @@ int main() {
     test_header_values_land_in_correct_places();
     test_reorder_u32();
     test_parsed_header_is_properly_dumped();
+    test_parse_packet_record_on_empty_header_returns_incomplete();
     return 0;
 }
