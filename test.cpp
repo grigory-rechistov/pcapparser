@@ -50,30 +50,30 @@ static void test_parse_header_on_bad_magic_should_throw() {
 }
 
 static constexpr size_t header_size_in_dwords = 6;
-// TODO convert to closure
-static size_t mock_stream_pos = 0;
-const std::array<uint32_t, header_size_in_dwords> mock_stream = {
-    0xA1B2C3D4,
-    0,
-    0,
-    0,
-    1,
-    0
-};
 
-auto mock_read_whole_header(FILE* stream) ->uint32_t {
-    auto val = mock_stream.at(mock_stream_pos);
-    mock_stream_pos += 1;
-    return val;
-}
+
 
 static void test_parse_header_reads_whole_header() {
-    mock_stream_pos = 0;
+    size_t stream_pos = 0;
+    const std::array<uint32_t, header_size_in_dwords> mock_stream = {
+        0xA1B2C3D4,
+        0,
+        0,
+        0,
+        1,
+        0
+    };
+
+    auto mock_read_whole_header = [&mock_stream, &stream_pos] (FILE* stream) -> uint32_t {
+        auto val = mock_stream.at(stream_pos);
+        stream_pos += 1;
+        return val;
+    };
+
     parse_header(mock_read_whole_header, nullptr);
-    EXPECT(mock_stream_pos == header_size_in_dwords,
+    EXPECT(stream_pos == header_size_in_dwords,
         "parse_header() should read whole header");
 }
-
 
 static void test_parse_header_on_zero_snap_len_throws() {
     size_t stream_pos = 0;
