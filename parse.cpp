@@ -26,5 +26,8 @@ ParsedHeader parse_header( ReadDword dword_reader, FILE *f) {
 
     ParsedHeader res{};
     res.is_time_in_ns = magic == magic_sec_ns;
+    res.major_version = static_cast<uint16_t>(major_minor >> 16);
+    res.minor_version = static_cast<uint16_t>(major_minor & 0xffffU);
+    res.unparsed_link_type = fcs_f_link_type;
     return res;
 }

@@ -9,7 +9,5 @@ struct ParsedHeader {
     uint32_t reserved1;
     uint32_t reserved2;
     uint32_t snap_len;
-    uint32_t link_type;
-    bool fcs_valid;
-    uint8_t fcs;
+    uint32_t unparsed_link_type; // TODO extract FCS if needed
 };

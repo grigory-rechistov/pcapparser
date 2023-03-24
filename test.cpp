@@ -124,6 +124,8 @@ static void test_header_values_land_in_correct_places() {
     auto ph = parse_header(mock_read_whole_header, nullptr);
     EXPECT(ph.is_time_in_ns, "is_time_in_ns");
     EXPECT(ph.major_version == 2, "major_version");
+    EXPECT(ph.minor_version == 4, "minor_version");
+    EXPECT(ph.snap_len == 1000, "snap_len");
 
 }
 
