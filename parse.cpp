@@ -24,6 +24,7 @@ ParsedHeader parse_header( ReadDword dword_reader, FILE *f) {
     }
     uint32_t fcs_f_link_type = reorder_u32(dword_reader(f));
 
+    // TODO this should be in constructor for ParsedHeader
     ParsedHeader res{};
     res.is_time_in_ns = magic == magic_sec_ns;
     res.major_version = static_cast<uint16_t>(major_minor & 0xffffU);
