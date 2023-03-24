@@ -86,7 +86,7 @@ static void test_parse_header_on_zero_snap_len_throws() {
         0
     };
 
-    auto mock_read_bad_magic_header = [&mock_bad_stream, &stream_pos] (FILE* stream) -> uint32_t {
+    auto mock_read_bad_snap_len = [&mock_bad_stream, &stream_pos] (FILE* stream) -> uint32_t {
         auto val = mock_bad_stream.at(stream_pos);
         stream_pos += 1;
         return val;
@@ -94,7 +94,7 @@ static void test_parse_header_on_zero_snap_len_throws() {
 
     bool bad_snap_len_detected = false;
     try {
-        parse_header(mock_read_bad_magic_header, nullptr);
+        parse_header(mock_read_bad_snap_len, nullptr);
     } catch (const ValueOutOfRange) {
         bad_snap_len_detected = true;
     } catch (...) {
