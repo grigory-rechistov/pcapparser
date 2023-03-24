@@ -3,6 +3,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <array>
+#include <iostream>
 #include "exc.h"
 #include "header.h"
 #include "bele.h"
@@ -142,8 +143,12 @@ static void test_parsed_header_is_properly_dumped() {
     h.minor_version = 5;
     h.snap_len = 1234;
     auto dump_text = h.dump();
-    const std::string ref_dump = "";
-    EXPECT(dump_text == ref_dump, "Dumped as expected");
+    const std::string ref_dump = "Header: time in sec:ns version: 6.5 snap_len: 1234";
+    if (dump_text != ref_dump) {
+        std::cout << "Expected: " << ref_dump << "\n"; 
+        std::cout << "Got     : " << dump_text << "\n";
+        FAIL("Dumped string difference");
+    }
 }
 
 int main() {
