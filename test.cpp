@@ -105,30 +105,30 @@ static void test_parse_header_on_zero_snap_len_throws() {
     EXPECT(bad_snap_len_detected,"Should have reported bad SnapLen in header");
 }
 
-// static void test_header_values_land_in_correct_places() {
-//     size_t stream_pos = 0;
-//     const std::array<uint32_t, header_size_in_dwords> realistic_stream = {
-//         0xA1B23C4D,
-//         0x02000400,
-//         0,
-//         0,
-//         1000,
-//         0
-//     };
+static void test_header_values_land_in_correct_places() {
+    size_t stream_pos = 0;
+    const std::array<uint32_t, header_size_in_dwords> realistic_stream = {
+        reorder_u32(0xA1B23C4D),
+        reorder_u32(0x00040002),
+        0,
+        0,
+        reorder_u32(1000),
+        0
+    };
 
-//     auto mock_read_whole_header = [&realistic_stream, &stream_pos] (FILE* stream) -> uint32_t {
-//         auto val = realistic_stream.at(stream_pos);
-//         stream_pos += 1;
-//         return val;
-//     };
+    auto mock_read_whole_header = [&realistic_stream, &stream_pos] (FILE* stream) -> uint32_t {
+        auto val = realistic_stream.at(stream_pos);
+        stream_pos += 1;
+        return val;
+    };
 
-//     auto ph = parse_header(mock_read_whole_header, nullptr);
-//     EXPECT(ph.is_time_in_ns, "is_time_in_ns");
-//     EXPECT(ph.major_version == 2, "major_version");
-//     EXPECT(ph.minor_version == 4, "minor_version");
-//     EXPECT(ph.snap_len == 1000, "snap_len");
+    auto ph = parse_header(mock_read_whole_header, nullptr);
+    EXPECT(ph.is_time_in_ns, "is_time_in_ns");
+    EXPECT(ph.major_version == 2, "major_version");
+    EXPECT(ph.minor_version == 4, "minor_version");
+    EXPECT(ph.snap_len == 1000, "snap_len");
 
-// }
+}
 
 static void test_reorder_u32() {
     auto res = reorder_u32(0x11223344U);
@@ -140,7 +140,7 @@ int main() {
     test_parse_header_on_bad_magic_should_throw();
     test_parse_header_reads_whole_header();
     test_parse_header_on_zero_snap_len_throws();
-    // test_header_values_land_in_correct_places();
+    test_header_values_land_in_correct_places();
     test_reorder_u32();
     return 0;
 }
