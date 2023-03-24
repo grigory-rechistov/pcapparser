@@ -11,6 +11,11 @@ void parse_header( ReadDword dword_reader, FILE *f) {
     if (magic != magic_sec_ms && magic != magic_sec_ns) {
         throw BadMagic();
     }
-
     (void)magic;
+    uint32_t major_minor = dword_reader(f);
+    uint32_t reserved1 = dword_reader(f);
+    uint32_t reserved2 = dword_reader(f);
+    uint32_t snap_len = dword_reader(f);
+    uint32_t fcs_f_link_type = dword_reader(f);
+
 }
