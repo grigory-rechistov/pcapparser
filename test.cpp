@@ -2,6 +2,7 @@
 #include "parse.h"
 #include <cstdio>
 #include <cstdlib>
+#include <array>
 #include "exc.h"
 
 #define FAIL(reason) do {\
@@ -48,9 +49,34 @@ static void test_parse_header_on_bad_magic_should_throw() {
     EXPECT(bad_magic_detected,"Should have reported bad magic in header");
 }
 
+static constexpr size_t header_size_in_dwords = 6;
+static size_t mock_stream_pos = 0;
+const std::array<uint32_t, header_size_in_dwords> mock_stream = {
+    0xA1B2C3D4,
+    0,
+    0,
+    0,
+    1,
+    0
+};
+
+auto mock_read_whole_header(FILE* stream) ->uint32_t {
+    auto val = mock_stream.at(mock_stream_pos);
+    mock_stream_pos += 1;
+    return val;
+}
+
+static void test_parse_header_reads_whole_header() {
+    mock_stream_pos = 0;
+    parse_header(mock_read_whole_header, nullptr);
+    EXPECT(mock_stream_pos == header_size_in_dwords,
+        "parse_header() should read whole header");
+}
+
 
 int main() {
     test_parse_header_on_empty_should_throw();
     test_parse_header_on_bad_magic_should_throw();
+    test_parse_header_reads_whole_header();
     return 0;
 }
