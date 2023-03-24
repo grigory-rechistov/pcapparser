@@ -58,7 +58,7 @@ static constexpr size_t header_size_in_dwords = 6;
 static void test_parse_header_reads_whole_header() {
     size_t stream_pos = 0;
     const std::array<uint32_t, header_size_in_dwords> mock_stream = {
-        0xA1B2C3D4,
+        reorder_u32(0xA1B2C3D4),
         0,
         0,
         0,
@@ -80,7 +80,7 @@ static void test_parse_header_reads_whole_header() {
 static void test_parse_header_on_zero_snap_len_throws() {
     size_t stream_pos = 0;
     const std::array<uint32_t, header_size_in_dwords> mock_bad_stream = {
-        0xA1B2C3D4,
+        reorder_u32(0xA1B2C3D4),
         0,
         0,
         0,
