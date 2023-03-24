@@ -135,6 +135,17 @@ static void test_reorder_u32() {
     EXPECT(res == 0x44332211U, "Octets are swapped");
 }
 
+static void test_parsed_header_is_properly_dumped() {
+    ParsedHeader h{};
+    h.is_time_in_ns = true;
+    h.major_version = 6;
+    h.minor_version = 5;
+    h.snap_len = 1234;
+    auto dump_text = h.dump();
+    const std::string ref_dump = "";
+    EXPECT(dump_text == ref_dump, "Dumped as expected");
+}
+
 int main() {
     test_parse_header_on_empty_should_throw();
     test_parse_header_on_bad_magic_should_throw();
@@ -142,5 +153,6 @@ int main() {
     test_parse_header_on_zero_snap_len_throws();
     test_header_values_land_in_correct_places();
     test_reorder_u32();
+    test_parsed_header_is_properly_dumped();
     return 0;
 }

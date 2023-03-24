@@ -1,6 +1,7 @@
 // parsed header
 #pragma once
 #include <cstdint>
+#include <string>
 
 struct ParsedHeader {
     bool is_time_in_ns;
@@ -10,4 +11,6 @@ struct ParsedHeader {
     uint32_t reserved2;
     uint32_t snap_len;
     uint32_t unparsed_link_type; // TODO extract FCS if needed
+
+    std::string dump();
 };
