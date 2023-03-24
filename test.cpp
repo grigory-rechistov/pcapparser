@@ -2,7 +2,7 @@
 #include "parse.h"
 #include <cstdio>
 #include <cstdlib>
-#include <exception>
+#include "exc.h"
 
 #define FAIL(reason) do {\
     printf("Expectation failed at %s:%d %s\n", __FILE__, __LINE__, (reason)); \
@@ -15,8 +15,6 @@
     } \
 } while (0);
 
-class TruncatedInput: public std::exception {};
-class BadMagic: public std::exception {};
 
 auto mock_read_truncated_header(FILE* stream) ->uint32_t {
     throw TruncatedInput();
