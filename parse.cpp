@@ -1,5 +1,5 @@
 // File format after https://datatracker.ietf.org/doc/id/draft-gharris-opsawg-pcap-00.html
-// TODO this parser is explicitly little endian. Big endian inputs are not handled
+// TODO Code is assuming little endian. Big endian hosts are not handled
 // correctly.
 #include "parse.h"
 #include "exc.h"
