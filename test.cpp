@@ -21,7 +21,7 @@ auto mock_read_truncated_header(FILE* stream) ->uint32_t {
     throw TruncatedInput();
 }
 
-static void test_parse_header_on_empty() {
+static void test_parse_header_on_empty_should_throw() {
     bool truncation_detected = false;
     try {
         parse_header(mock_read_truncated_header, nullptr);
@@ -33,7 +33,8 @@ static void test_parse_header_on_empty() {
     EXPECT(truncation_detected,"Should not return normally on empty header");
 }
 
+
 int main() {
-    test_parse_header_on_empty();
+    test_parse_header_on_empty_should_throw();
     return 0;
 }
