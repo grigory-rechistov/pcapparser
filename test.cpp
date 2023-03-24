@@ -50,6 +50,7 @@ static void test_parse_header_on_bad_magic_should_throw() {
 }
 
 static constexpr size_t header_size_in_dwords = 6;
+// TODO convert to closure
 static size_t mock_stream_pos = 0;
 const std::array<uint32_t, header_size_in_dwords> mock_stream = {
     0xA1B2C3D4,
@@ -74,9 +75,38 @@ static void test_parse_header_reads_whole_header() {
 }
 
 
+static void test_parse_header_on_zero_snap_len_throws() {
+    size_t stream_pos = 0;
+    const std::array<uint32_t, header_size_in_dwords> mock_bad_stream = {
+        0xA1B2C3D4,
+        0,
+        0,
+        0,
+        0, // zero SnapLen is violation
+        0
+    };
+
+    auto mock_read_bad_magic_header = [&mock_bad_stream, &stream_pos] (FILE* stream) -> uint32_t {
+        auto val = mock_bad_stream.at(stream_pos);
+        stream_pos += 1;
+        return val;
+    };
+
+    bool bad_snap_len_detected = false;
+    try {
+        parse_header(mock_read_bad_magic_header, nullptr);
+    } catch (const ValueOutOfRange) {
+        bad_snap_len_detected = true;
+    } catch (...) {
+        FAIL("Unexpected exception thrown");
+    }
+    EXPECT(bad_snap_len_detected,"Should have reported bad SnapLen in header");
+}
+
 int main() {
     test_parse_header_on_empty_should_throw();
     test_parse_header_on_bad_magic_should_throw();
     test_parse_header_reads_whole_header();
+    test_parse_header_on_zero_snap_len_throws();
     return 0;
 }
