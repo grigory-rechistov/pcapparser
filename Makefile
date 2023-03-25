@@ -15,8 +15,9 @@ clean:
 	rm -f parser-test pcapparser
 
 # Test a small sample input to generate expected output 
-ref-test: pcapparser
+ref-test: pcapparser simbadecoder
 	./pcapparser < ref/first_ten.pcap | hexdump -C | diff - ref/output.hex
+	./simbadecoder < ref/first_ten.pcap | diff - ref/obs-txes.txt
 
 simbadecoder: parsedheader.cpp packet.cpp order.cpp io.cpp simbadecoder.cpp
 	${CXX} -g $^ -o $@
