@@ -227,6 +227,39 @@ static void test_packet_get_raw_data_on_truncated_data() {
     EXPECT(res.size() < requested, "Returned fewer octets than asked");
 }
 
+static void test_packet_get_raw_data_on_full_data() {
+    ParsedHeader ph {};
+    PacketRecord pr(ph);
+    constexpr size_t requested = 10;
+
+    auto mock_read_all_bytes = [&requested] (FILE* stream, size_t count, std::vector<uint8_t> &out) {
+        EXPECT(requested == count, "unexpected read count");
+        out.resize(requested);
+        out.assign({1,2,3,4,5,6,7,8,9,10});
+    };
+
+    size_t header_stream_pos = 0;
+    const std::array<uint32_t, 4> packet_header_stream = {
+        0,
+        0,
+        reorder_u32(requested),
+        0,
+    };
+
+    auto mock_read_whole_header = [&packet_header_stream, &header_stream_pos] (FILE* stream) -> uint32_t {
+        auto val = packet_header_stream.at(header_stream_pos);
+        header_stream_pos += 1;
+        return val;
+    };
+
+    pr.parse(mock_read_whole_header, nullptr); // inject captured_length
+    pr.read_raw_data(mock_read_all_bytes, nullptr);
+    auto res = pr.raw_data();
+    EXPECT(!pr.is_incomplete(), "Should be marked as complete");
+    EXPECT(res.size() == requested, "Returned exactly how much asked");    
+    EXPECT(res == std::vector<uint8_t>({1,2,3,4,5,6,7,8,9,10}), "Contents as expected");
+}
+
 int main() {
     test_parse_header_on_empty_should_throw();
     test_parse_header_on_bad_magic_should_throw();
@@ -238,5 +271,6 @@ int main() {
     test_parse_packet_record_on_empty_header_returns_incomplete();
     test_parse_packet_record_handles_microseconds();
     test_packet_get_raw_data_on_truncated_data();
+    test_packet_get_raw_data_on_full_data();
     return 0;
 }
