@@ -1,7 +1,7 @@
 // File format after https://datatracker.ietf.org/doc/id/draft-gharris-opsawg-pcap-00.html
 // TODO Code is assuming little endian. Big endian hosts are not handled
 // correctly.
-#include "parse.h"
+#include "parsedheader.h"
 #include "exc.h"
 
 static constexpr uint32_t magic_sec_ms = 0xA1B2C3D4;
