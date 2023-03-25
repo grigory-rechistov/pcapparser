@@ -46,7 +46,7 @@ std::string OrderBookSnapshot::dump() {
     // wastefully preallocate buffer 
     char buf[1000] = {0};
 
-    snprintf(buf, sizeof(buf) -1, "OrderBookSnapshot:\n"
+    snprintf(buf, sizeof(buf) -1, "Full headers\n"
                        "  Market data packet header\n"
                        "    MsgSeqNum %#x\n"
                        "    MsgSize %#x\n"
@@ -57,11 +57,41 @@ std::string OrderBookSnapshot::dump() {
                        "    TemplateId %#x\n"
                        "    SchemaId %#x\n"
                        "    Version %#x\n"
+                       "  OrderBookSnapshot\n"
+                       "    SecurityID %#x\n"
+                       "    LastMsgSeqNumProcessed %#x\n"
+                       "    RptSeq %#x\n"
+                       "    ExchangeTradingSessionID %#x\n"
+                       "    NoMDEntries.block_length %#x\n"
+                       "    NoMDEntries.number_in_group %#x\n"
+                       "    MDEntryID %#lx\n"
+                       "    TransactTime %#l\n"
+                       "    MDEntryPx %#lx\n"
+                       "    MDEntrySize %#lx\n"
+                       "    TradeId %#lx\n"
+                       "    MDFlags %#lx\n"
+                       "    MDEntryType %#x\n"
                        , MsgSeqNum, (unsigned)MsgSize, (unsigned)MsgFlags,
                          SendingTime,
                          (unsigned)BlockLength,
                          (unsigned)TemplateId, (unsigned)SchemaId, 
-                         (unsigned)Version
+                         (unsigned)Version,
+
+                        msg17.SecurityID,
+                        msg17.LastMsgSeqNumProcessed,
+                        msg17.RptSeq,
+                        msg17.ExchangeTradingSessionID,
+                        (unsigned)msg17.NoMDEntries.block_length,
+                        (unsigned)msg17.NoMDEntries.number_in_group,
+                        
+                        msg17.MDEntryID,
+                        msg17.TransactTime,
+                        msg17.MDEntryPx,
+                        msg17.MDEntrySize,
+                        msg17.TradeId,
+                        msg17.MDFlags,
+
+                        (unsigned)msg17.MDEntryType
     );
     return std::string(buf);
 }
