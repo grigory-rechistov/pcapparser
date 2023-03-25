@@ -34,6 +34,9 @@ timestamp_t PacketRecord::timestamp() {
 }
 
 void PacketRecord::read_raw_data(FillBuffer byte_filler, FILE *f) {
+    if (incomplete) {
+        return;
+    }
     byte_filler(f, packet_length, data);
     if (data.size() < packet_length) {
         incomplete = true;
