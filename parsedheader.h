@@ -1,12 +1,10 @@
 #pragma once
 #include <cstdint>
 #include <string>
-#include<functional>
 #include <cstdio>
+#include "io.h"
 
 static constexpr size_t header_size_in_dwords = 6;
-using ReadDword = std::function <uint32_t (FILE* stream)>;
-
 struct ParsedHeader {
     bool is_time_in_ns;
     uint16_t major_version;

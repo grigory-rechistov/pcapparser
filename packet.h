@@ -1,14 +1,10 @@
 // Individual packets after the file header 
 #pragma once
-#include <functional>
 #include <cstdint>
 #include <cstdio>
 #include "timestamp.h"
 #include "parsedheader.h"
-
-using ReadDword = std::function <uint32_t (FILE* stream)>;
-
-using FillBuffer = std::function <void (FILE* stream, size_t count, std::vector<uint8_t> &out)>;
+#include "io.h"
 
 class PacketRecord {
     bool incomplete;
