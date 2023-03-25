@@ -260,6 +260,44 @@ static void test_packet_get_raw_data_on_full_data() {
     EXPECT(res == std::vector<uint8_t>({1,2,3,4,5,6,7,8,9,10}), "Contents as expected");
 }
 
+static void test_dump_short_packet() {
+    ParsedHeader ph {};
+    PacketRecord pr(ph);
+    const std::vector<uint8_t> reference = {
+        0xca, 0xfe, 0xba, 0xbe,  0x31, 0x41, 0x59, 0x26};
+    const size_t requested = reference.size();
+
+    auto mock_read_all_bytes = [&requested, &reference] (FILE* stream, size_t count, std::vector<uint8_t> &out) {
+        EXPECT(requested == count, "unexpected read count");
+        out = reference;
+    };
+
+    size_t header_stream_pos = 0;
+    const std::array<uint32_t, 4> packet_header_stream = {
+        0,
+        0,
+        reorder_u32(requested),
+        0,
+    };
+
+    auto mock_read_whole_header = [&packet_header_stream, &header_stream_pos] (FILE* stream) -> uint32_t {
+        auto val = packet_header_stream.at(header_stream_pos);
+        header_stream_pos += 1;
+        return val;
+    };
+
+    pr.parse_header(mock_read_whole_header, nullptr); // inject captured_length
+    pr.read_raw_data(mock_read_all_bytes, nullptr);
+    const std::string ref_dump = "ca fe ba be 31 41 59 26";
+    auto dump_text = pr.dump();
+    if (dump_text != ref_dump) {
+        std::cout << "Expected: " << ref_dump << "\n"; 
+        std::cout << "Got     : " << dump_text << "\n";
+        FAIL("Dumped string difference");
+    }
+
+}
+
 int main() {
     test_parse_header_on_empty_should_throw();
     test_parse_header_on_bad_magic_should_throw();
@@ -272,5 +310,6 @@ int main() {
     test_parse_packet_record_handles_microseconds();
     test_packet_get_raw_data_on_truncated_data();
     test_packet_get_raw_data_on_full_data();
+    test_dump_short_packet();
     return 0;
 }

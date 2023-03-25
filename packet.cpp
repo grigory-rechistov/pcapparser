@@ -43,3 +43,21 @@ void PacketRecord::read_raw_data(FillBuffer byte_filler, FILE *f) {
 const std::vector<uint8_t> PacketRecord::raw_data() {
     return data;
 }
+
+const std::string PacketRecord::dump() {
+    if (data.size() == 0) {
+        return std::string("");
+    }
+    std::string res{};
+    for (const auto &c: data) {
+        char hexpair[] = "   ";
+        auto n1 = c >> 4;
+        auto n2 = c & 0xfU;
+        hexpair[0] = n1 < 10? n1 + '0': n1 + 'a' - 10;
+        hexpair[1] = n2 < 10? n2 + '0': n2 + 'a' - 10;
+        res.append(hexpair);
+    }
+    res.pop_back(); // the nasty trailing end space
+    return res;
+
+}
