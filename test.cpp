@@ -8,6 +8,7 @@
 #include "header.h"
 #include "bele.h"
 #include "packet.h"
+#include "timestamp.h"
 
 #define FAIL(reason) do {\
     printf("Expectation failed at %s:%d %s\n", __FILE__, __LINE__, (reason)); \
