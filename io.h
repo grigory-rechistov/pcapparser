@@ -1,4 +1,5 @@
 // Streams for input
+#pragma once
 #include <cstdio>
 #include <vector>
 #include <cstdint>
