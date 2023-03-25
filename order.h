@@ -5,16 +5,6 @@
 
 class OrderBookSnapshot {
     bool valid;
-    uint32_t MsgSeqNum;
-    uint16_t MsgSize;
-    uint16_t MsgFlags;
-    uint64_t SendingTime;
-
-    uint16_t BlockLength;
-    uint16_t TemplateId;
-    uint16_t SchemaId;
-    uint16_t Version;
-
 #pragma pack(push,1)
     struct {
         uint32_t SecurityID;
