@@ -1,5 +1,4 @@
 #include "packet.h"
-#include "bele.h"
 #include "exc.h"
 
 
@@ -15,10 +14,10 @@ PacketRecord::PacketRecord(const ParsedHeader &ph): incomplete(false), ts{},
 void PacketRecord::parse_header(ReadDword dword_reader, FILE *f) {
 
     try {
-        uint32_t full_seconds = reorder_u32(dword_reader(f));
-        uint32_t sub_seconds = reorder_u32(dword_reader(f)); // to be decoded ms/ns
-        uint32_t captured_length = reorder_u32(dword_reader(f));
-        uint32_t original_length = reorder_u32(dword_reader(f));
+        uint32_t full_seconds = dword_reader(f);
+        uint32_t sub_seconds = dword_reader(f); // to be decoded ms/ns
+        uint32_t captured_length = dword_reader(f);
+        uint32_t original_length = dword_reader(f);
         ts.s = full_seconds;
         ts.ns = sub_seconds * sub_sec_factor;
         packet_length = captured_length; // TODO validate against snap_len and original_length
