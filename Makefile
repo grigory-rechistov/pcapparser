@@ -1,7 +1,7 @@
 
 .PHONY: test ref-test
 .PRECIOUS: parser-test
-test: parser-test pcapparser ref-test
+test: parser-test pcapparser ref-test simbadecoder
 
 # TODO set proper dependencies from headers
 parser-test: parsedheader.cpp packet.cpp test.cpp 
@@ -17,3 +17,6 @@ clean:
 # Test a small sample input to generate expected output 
 ref-test: pcapparser
 	./pcapparser < ref/first_ten.pcap | hexdump -C | diff - ref/output.hex
+
+simbadecoder: parsedheader.cpp packet.cpp simbadecoder.cpp
+	${CXX} -g $^ -o $@
