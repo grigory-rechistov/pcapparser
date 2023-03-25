@@ -4,7 +4,7 @@
 test: parser-test pcapparser ref-test simbadecoder
 
 # TODO set proper dependencies from headers
-parser-test: parsedheader.cpp packet.cpp test.cpp 
+parser-test: parsedheader.cpp packet.cpp order.cpp test.cpp 
 	${CXX} -g $^ -o $@
 	./$@
 
@@ -18,5 +18,5 @@ clean:
 ref-test: pcapparser
 	./pcapparser < ref/first_ten.pcap | hexdump -C | diff - ref/output.hex
 
-simbadecoder: parsedheader.cpp packet.cpp simbadecoder.cpp
+simbadecoder: parsedheader.cpp packet.cpp order.cpp simbadecoder.cpp
 	${CXX} -g $^ -o $@
