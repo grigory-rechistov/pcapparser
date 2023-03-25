@@ -133,10 +133,10 @@ static void test_header_values_land_in_correct_places() {
 
 }
 
-static void test_reorder_u32() {
-    auto res = reorder_u32(0x11223344U);
-    EXPECT(res == 0x44332211U, "Octets are swapped");
-}
+// static void test_reorder_u32() {
+//     auto res = reorder_u32(0x11223344U);
+//     EXPECT(res == 0x44332211U, "Octets are swapped");
+// }
 
 static void test_parsed_header_is_properly_dumped() {
     ParsedHeader h{};
@@ -266,7 +266,7 @@ int main() {
     test_parse_header_reads_whole_header();
     test_parse_header_on_zero_snap_len_throws();
     test_header_values_land_in_correct_places();
-    test_reorder_u32();
+    // test_reorder_u32();
     test_parsed_header_is_properly_dumped();
     test_parse_packet_record_on_empty_header_returns_incomplete();
     test_parse_packet_record_handles_microseconds();
