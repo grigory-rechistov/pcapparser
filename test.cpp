@@ -5,7 +5,6 @@
 #include <array>
 #include <iostream>
 #include "exc.h"
-#include "header.h"
 #include "packet.h"
 #include "timestamp.h"
 

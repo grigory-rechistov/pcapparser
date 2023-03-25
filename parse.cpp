@@ -3,7 +3,6 @@
 // correctly.
 #include "parse.h"
 #include "exc.h"
-#include "header.h"
 
 static constexpr uint32_t magic_sec_ms = 0xA1B2C3D4;
 static constexpr uint32_t magic_sec_ns = 0xA1B23C4D;

@@ -1,7 +1,6 @@
 #include "packet.h"
 #include "exc.h"
 
-
 PacketRecord::PacketRecord(const ParsedHeader &ph): incomplete(false), ts{}, 
     data{}, packet_length{} {
     if (ph.is_time_in_ns) {
@@ -26,7 +25,6 @@ void PacketRecord::parse_header(ReadDword dword_reader, FILE *f) {
         incomplete = true;
     }
 }
-
 
 timestamp_t PacketRecord::timestamp() {
     return ts;
