@@ -42,7 +42,7 @@ static bool decode_packet(ParsedHeader &ph, FILE *const in, FILE *const out) {
         auto orderbooksnapshot = OrderBookSnapshot(payload);
 
         if (orderbooksnapshot.is_valid()) {
-            printf("OrderBookSnapshot found in: %s\n", pr.dump().c_str());
+            printf("OrderBookSnapshot found in: %s\n", orderbooksnapshot.dump().c_str());
         }
 
         // fwrite(rd.data() rd.size(), 1, out);
