@@ -164,6 +164,32 @@ static void test_parse_packet_record_on_empty_header_returns_incomplete() {
     EXPECT(pr.is_incomplete(),"Should be marked as incomplete");
 }
 
+static void test_parse_packet_record_handles_microseconds() {
+    constexpr uint32_t ms = 5678;
+    constexpr long ms_to_ns_factor = 1000;
+    size_t stream_pos = 0;
+    const std::array<uint32_t, 4> packet_header_stream = {
+        reorder_u32(5555),
+        reorder_u32(ms),
+        0,
+        0,
+    };
+
+    auto mock_read_whole_header = [&packet_header_stream, &stream_pos] (FILE* stream) -> uint32_t {
+        auto val = packet_header_stream.at(stream_pos);
+        stream_pos += 1;
+        return val;
+    };
+
+    PacketRecord pr;
+    pr.parse(mock_read_whole_header, nullptr);
+    EXPECT(!pr.is_incomplete(),"Should be marked as complete");
+    auto ts = pr.timestamp();
+    EXPECT(ts.s == 5555, "Seconds are preserved"); 
+    EXPECT(ts.ns == ms* ms_to_ns_factor,"microseconds are converted to nanoseconds");
+
+}
+
 int main() {
     test_parse_header_on_empty_should_throw();
     test_parse_header_on_bad_magic_should_throw();
@@ -173,5 +199,6 @@ int main() {
     test_reorder_u32();
     test_parsed_header_is_properly_dumped();
     test_parse_packet_record_on_empty_header_returns_incomplete();
+    test_parse_packet_record_handles_microseconds();
     return 0;
 }
