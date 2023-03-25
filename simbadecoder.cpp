@@ -14,9 +14,7 @@ static bool decode_packet(ParsedHeader &ph, FILE *const in, FILE *const out) {
             return true;
         }
 
-        auto payload = pr.payload();
-
-        auto orderbooksnapshot = OrderBookSnapshot(payload);
+        auto orderbooksnapshot = OrderBookSnapshot(pr.payload());
         if (orderbooksnapshot.is_valid()) {
             printf("%s\n", orderbooksnapshot.dump().c_str());
         }
