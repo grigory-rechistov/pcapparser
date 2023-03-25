@@ -270,6 +270,38 @@ static void test_dump_short_packet() {
     }
 }
 
+static void test_packet_get_payload_properly_offset() {
+    ParsedHeader ph {};
+    PacketRecord pr(ph);
+    std::vector<uint8_t> reference(44);
+    reference.at(42) = 0xff;
+    uint32_t requested = reference.size();
+
+    auto mock_read_all_bytes = [&requested, &reference] (FILE* stream, 
+        size_t count, std::vector<uint8_t> &out) {
+        EXPECT(requested == count, "unexpected read count");
+        out.resize(requested);
+        out = reference;
+    };
+
+    size_t header_stream_pos = 0;
+    MockPacketHeader packet_header_stream = {0, 0, requested,0};
+
+    auto mock_read_whole_header = [&packet_header_stream, &header_stream_pos]
+        (FILE* stream) -> uint32_t {
+        auto val = packet_header_stream.at(header_stream_pos);
+        header_stream_pos += 1;
+        return val;
+    };
+
+    pr.parse_header(mock_read_whole_header, nullptr); // inject captured_length
+    pr.read_raw_data(mock_read_all_bytes, nullptr);
+    auto res = pr.payload();
+    EXPECT(res.size() == 2, "Returned remained of the payload");    
+    EXPECT(res.at(0) == 0xff, "Contents as expected");
+}
+
+
 int main() {
     test_parse_header_on_empty_should_throw();
     test_parse_header_on_bad_magic_should_throw();
@@ -282,5 +314,6 @@ int main() {
     test_packet_get_raw_data_on_truncated_data();
     test_packet_get_raw_data_on_full_data();
     test_dump_short_packet();
+    test_packet_get_payload_properly_offset();
     return 0;
 }

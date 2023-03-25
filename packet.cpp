@@ -44,6 +44,17 @@ const std::vector<uint8_t> PacketRecord::raw_data() {
     return data;
 }
 
+const std::vector<uint8_t> PacketRecord::payload() {
+    // This is a heuristic value
+    constexpr size_t eth_ipv4_udp_length = 42;
+    if (data.size() <= eth_ipv4_udp_length) {
+        throw NotSupportedInput();
+    }
+    std::vector<uint8_t> res(data.begin () + eth_ipv4_udp_length, data.end());
+    return res;
+}
+
+
 const std::string PacketRecord::dump() {
     if (data.size() == 0) {
         return std::string("");

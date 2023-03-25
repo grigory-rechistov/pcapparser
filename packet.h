@@ -25,4 +25,5 @@ class PacketRecord {
     void read_raw_data(FillBuffer byte_filler, FILE *f);
     const std::vector<uint8_t> raw_data();
     const std::string dump();
+    const std::vector<uint8_t> payload();
 };
