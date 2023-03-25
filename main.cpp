@@ -1,4 +1,4 @@
-// entrypoint for the main converter
+// Entrypoint for the main converter
 // It takes stdin and gives stdout
 // Compile with RAW_MODE defined to make it output binary instead of hexadecimal
 #define RAW_MODE 1
@@ -26,19 +26,18 @@ auto read_input_buffer(FILE* stream, size_t count, std::vector<uint8_t> &out) {
     out.resize(actual);
 }
 
-int main() {
+static auto make_binary_streams() {
     FILE *const in = fdopen(dup(fileno(stdin)), "rb");
     FILE *const out = fdopen(dup(fileno(stdout)), "wb");
-    
-    ParsedHeader ph{};
-    ph.parse_header(read_input_u32, in);
+    return std::tuple{in, out};
+}
 
-    while (true) {
+static bool decode_packet(ParsedHeader &ph, FILE *const in, FILE *const out) {
         PacketRecord pr(ph);
         pr.parse_header(read_input_u32, in);
         pr.read_raw_data(read_input_buffer, in);
         if (pr.is_incomplete()) {
-            break;
+            return true;
         }
 #ifdef RAW_MODE
         auto rd = pr.raw_data();
@@ -46,7 +45,19 @@ int main() {
 #else
         printf("%s\n", pr.dump().c_str());
 #endif
-    }
+    return false;
+}
+
+int main() {
+    auto [in, out] = make_binary_streams();
+    
+    ParsedHeader ph{};
+    ph.parse_header(read_input_u32, in);
+
+    bool last = false;
+    do {
+        last = decode_packet(ph, in, out);
+    } while (!last);
     fclose(out);
     return 0;
 }
