@@ -1,20 +1,24 @@
 // Sensing and parsing of OrderBookSnapshot etc.
 #include "order.h"
 #include <cstring>
+#include <cstddef>
 #include <cassert>
+
+static constexpr uint8_t OrderBookSnapshotMarker = 'J';
+static constexpr size_t OrderBookSnapshotRecognizedLength = 92;
+static constexpr ptrdiff_t OrderBookSnapshotOffset = 24;
 
 OrderBookSnapshot::OrderBookSnapshot(const std::vector<uint8_t> &payload): 
     valid(false) {
-    if (payload.size() != 92) {
+    if (payload.size() != OrderBookSnapshotRecognizedLength) {
         return;
     }
-    if (payload.at(91) != 'J') {
+    if (payload.at(OrderBookSnapshotRecognizedLength-1) != OrderBookSnapshotMarker) {
         return;
     }
-
     const auto p = payload.data();
-    memcpy(&this->msg17, p + 24, sizeof(this->msg17));
-    assert(this->msg17.MDEntryType == 'J');
+    memcpy(&this->msg17, p + OrderBookSnapshotOffset, sizeof(this->msg17));
+    assert(this->msg17.MDEntryType ==  OrderBookSnapshotMarker);
 
     valid = true;
 }
