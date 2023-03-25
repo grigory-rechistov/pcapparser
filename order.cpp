@@ -27,7 +27,7 @@ bool OrderBookSnapshot::is_valid() {
 
 std::string OrderBookSnapshot::dump() {
     if (!is_valid()) {
-        return "invalid"; // throw exception?
+        return "invalid"; // throw exception instead?
     }
 
     // wastefully preallocate buffer 
