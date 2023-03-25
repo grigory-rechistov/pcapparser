@@ -1,5 +1,7 @@
 // Sensing and parsing of OrderBookSnapshot etc.
 #include "order.h"
+#include <cstring>
+#include <cassert>
 
 OrderBookSnapshot::OrderBookSnapshot(const std::vector<uint8_t> &payload): 
     valid(false) {
@@ -24,6 +26,10 @@ OrderBookSnapshot::OrderBookSnapshot(const std::vector<uint8_t> &payload):
     TemplateId = *reinterpret_cast<const uint16_t*>(p + 18);
     SchemaId = *reinterpret_cast<const uint16_t*>(p + 20);
     Version = *reinterpret_cast<const uint16_t*>(p + 22);
+
+    memcpy(&this->msg17, p + 24, sizeof(this->msg17));
+
+    assert(this->msg17.MDEntryType == 'J');
 
     valid = true;
 }
