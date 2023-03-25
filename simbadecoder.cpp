@@ -15,11 +15,12 @@ static bool decode_packet(ParsedHeader &ph, FILE *const in, FILE *const out) {
         }
 
         auto payload = pr.payload();
-        auto orderbooksnapshot = OrderBookSnapshot(payload);
 
+        auto orderbooksnapshot = OrderBookSnapshot(payload);
         if (orderbooksnapshot.is_valid()) {
             printf("%s\n", orderbooksnapshot.dump().c_str());
         }
+        /* TODO Add similar sensing for OrderExecution and OrderUpdate here */
 
     return false;
 }
