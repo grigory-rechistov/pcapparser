@@ -4,11 +4,11 @@
 test: parser-test pcapparser ref-test
 
 # TODO set proper dependencies from headers
-parser-test: parse.cpp test.cpp header.cpp packet.cpp
+parser-test: parse.cpp test.cpp packet.cpp
 	${CXX} -g $^ -o $@
 	./$@
 
-pcapparser: parse.cpp header.cpp packet.cpp main.cpp
+pcapparser: parse.cpp packet.cpp main.cpp
 	${CXX} -g $^ -o $@
 
 clean:
