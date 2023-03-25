@@ -10,6 +10,8 @@
 #include "packet.h"
 #include "timestamp.h"
 
+using std::string;
+
 #define FAIL(reason) do {\
     printf("Expectation failed at %s:%d %s\n", __FILE__, __LINE__, (reason)); \
     std::exit(-1); \
@@ -21,12 +23,9 @@
     } \
 } while (0);
 
-
-auto mock_read_truncated_header(FILE* stream) ->uint32_t {
-    throw TruncatedInput();
-}
-
 static void test_parse_header_on_empty_should_throw() {
+    auto mock_read_truncated_header = [] (FILE* stream) ->uint32_t {
+        throw TruncatedInput();};
     bool truncation_detected = false;
     try {
         parse_header(mock_read_truncated_header, nullptr);
@@ -38,11 +37,10 @@ static void test_parse_header_on_empty_should_throw() {
     EXPECT(truncation_detected,"Should not return normally on empty header");
 }
 
-auto mock_read_bad_magic_header(FILE* stream) ->uint32_t {
-    return 0xbaadc0de;
-}
-
 static void test_parse_header_on_bad_magic_should_throw() {
+    auto mock_read_bad_magic_header = [] (FILE* stream) ->uint32_t {
+        return 0xbaadc0de;
+    };
     bool bad_magic_detected = false;
     try {
         parse_header(mock_read_bad_magic_header, nullptr);
@@ -54,22 +52,14 @@ static void test_parse_header_on_bad_magic_should_throw() {
     EXPECT(bad_magic_detected,"Should have reported bad magic in header");
 }
 
-static constexpr size_t header_size_in_dwords = 6;
-
-
+using MockStreamHeader = const std::array<uint32_t, header_size_in_dwords>;
 
 static void test_parse_header_reads_whole_header() {
     size_t stream_pos = 0;
-    const std::array<uint32_t, header_size_in_dwords> mock_stream = {
-        reorder_u32(0xA1B2C3D4),
-        0,
-        0,
-        0,
-        1,
-        0
-    };
+    MockStreamHeader mock_stream = {0xA1B2C3D4, 0, 0, 0, 1, 0};
 
-    auto mock_read_whole_header = [&mock_stream, &stream_pos] (FILE* stream) -> uint32_t {
+    auto mock_read_whole_header = [&mock_stream, &stream_pos] (FILE* stream) 
+        -> uint32_t {
         auto val = mock_stream.at(stream_pos);
         stream_pos += 1;
         return val;
@@ -82,16 +72,11 @@ static void test_parse_header_reads_whole_header() {
 
 static void test_parse_header_on_zero_snap_len_throws() {
     size_t stream_pos = 0;
-    const std::array<uint32_t, header_size_in_dwords> mock_bad_stream = {
-        reorder_u32(0xA1B2C3D4),
-        0,
-        0,
-        0,
-        0, // zero SnapLen is violation
-        0
-    };
+    MockStreamHeader mock_bad_stream = {
+        0xA1B2C3D4, 0, 0, 0, 0 /* zero SnapLen is violation */, 0};
 
-    auto mock_read_bad_snap_len = [&mock_bad_stream, &stream_pos] (FILE* stream) -> uint32_t {
+    auto mock_read_bad_snap_len = [&mock_bad_stream, &stream_pos] (FILE* stream)
+     -> uint32_t {
         auto val = mock_bad_stream.at(stream_pos);
         stream_pos += 1;
         return val;
@@ -110,16 +95,17 @@ static void test_parse_header_on_zero_snap_len_throws() {
 
 static void test_header_values_land_in_correct_places() {
     size_t stream_pos = 0;
-    const std::array<uint32_t, header_size_in_dwords> realistic_stream = {
-        reorder_u32(0xA1B23C4D),
-        reorder_u32(0x00040002),
+    MockStreamHeader realistic_stream = {
+        0xA1B23C4D,
+        0x00040002,
         0,
         0,
-        reorder_u32(1000),
+        1000,
         0
     };
 
-    auto mock_read_whole_header = [&realistic_stream, &stream_pos] (FILE* stream) -> uint32_t {
+    auto mock_read_whole_header = [&realistic_stream, &stream_pos] (FILE* s) 
+        -> uint32_t {
         auto val = realistic_stream.at(stream_pos);
         stream_pos += 1;
         return val;
@@ -133,11 +119,6 @@ static void test_header_values_land_in_correct_places() {
 
 }
 
-// static void test_reorder_u32() {
-//     auto res = reorder_u32(0x11223344U);
-//     EXPECT(res == 0x44332211U, "Octets are swapped");
-// }
-
 static void test_parsed_header_is_properly_dumped() {
     ParsedHeader h{};
     h.is_time_in_ns = true;
@@ -145,7 +126,7 @@ static void test_parsed_header_is_properly_dumped() {
     h.minor_version = 5;
     h.snap_len = 1234;
     auto dump_text = h.dump();
-    const std::string ref_dump = "Header: time in sec:ns version: 6.5 snap_len: 1234";
+    const string ref_dump = "Header: time in sec:ns version: 6.5 snap_len: 1234";
     if (dump_text != ref_dump) {
         std::cout << "Expected: " << ref_dump << "\n"; 
         std::cout << "Got     : " << dump_text << "\n";
@@ -154,6 +135,9 @@ static void test_parsed_header_is_properly_dumped() {
 }
 
 static void test_parse_packet_record_on_empty_header_returns_incomplete() {
+    auto mock_read_truncated_header = [] (FILE* stream) ->uint32_t {
+        throw TruncatedInput();};
+
     ParsedHeader ph {};
     PacketRecord pr(ph);
     try {
@@ -166,33 +150,29 @@ static void test_parse_packet_record_on_empty_header_returns_incomplete() {
     EXPECT(pr.is_incomplete(),"Should be marked as incomplete");
 }
 
+using MockPacketHeader = const std::array<uint32_t, 4>;
+
 static void test_parse_packet_record_handles_microseconds() {
     constexpr uint32_t ms = 5678;
+    constexpr uint32_t full_sec = 6789;
     constexpr long ms_to_ns_factor = 1000;
     size_t stream_pos = 0;
-    const std::array<uint32_t, 4> packet_header_stream = {
-        reorder_u32(5555),
-        reorder_u32(ms),
-        0,
-        0,
-    };
+    MockPacketHeader packet_header_stream = {full_sec, ms, 0, 0};
 
-    auto mock_read_whole_header = [&packet_header_stream, &stream_pos] (FILE* stream) -> uint32_t {
+    auto mock_read_whole_header = [&packet_header_stream, &stream_pos] (FILE* s)
+        -> uint32_t {
         auto val = packet_header_stream.at(stream_pos);
         stream_pos += 1;
         return val;
     };
 
-
-    ParsedHeader h = {.is_time_in_ns = false};
-    
+    ParsedHeader h = {.is_time_in_ns = false};    
     PacketRecord pr(h);
     pr.parse_header(mock_read_whole_header, nullptr);
     EXPECT(!pr.is_incomplete(),"Should be marked as complete");
     auto ts = pr.timestamp();
-    EXPECT(ts.s == 5555, "Seconds are preserved"); 
-    EXPECT(ts.ns == ms* ms_to_ns_factor,"microseconds are converted to nanoseconds");
-
+    EXPECT(ts.s == full_sec, "Seconds are preserved"); 
+    EXPECT(ts.ns == ms*ms_to_ns_factor,"ms are converted to nanoseconds");
 }
 
 static void test_packet_get_raw_data_on_truncated_data() {
@@ -200,21 +180,16 @@ static void test_packet_get_raw_data_on_truncated_data() {
     PacketRecord pr(ph);
     constexpr size_t requested = 10;
 
-    auto mock_read_insufficient_bytes = [&requested] (FILE* stream, size_t count, std::vector<uint8_t> &out) {
-        
+    auto mock_read_insufficient_bytes = [&requested] (FILE* stream,
+        size_t count, std::vector<uint8_t> &out) {
         out.resize(requested - 1);
-        // out.at(0) = 0x11;
     };
 
     size_t header_stream_pos = 0;
-    const std::array<uint32_t, 4> packet_header_stream = {
-        0,
-        0,
-        reorder_u32(requested),
-        0,
-    };
+    MockPacketHeader packet_header_stream = {0, 0, requested, 0};
 
-    auto mock_read_whole_header = [&packet_header_stream, &header_stream_pos] (FILE* stream) -> uint32_t {
+    auto mock_read_whole_header = [&packet_header_stream, &header_stream_pos] 
+        (FILE* stream) -> uint32_t {
         auto val = packet_header_stream.at(header_stream_pos);
         header_stream_pos += 1;
         return val;
@@ -230,23 +205,21 @@ static void test_packet_get_raw_data_on_truncated_data() {
 static void test_packet_get_raw_data_on_full_data() {
     ParsedHeader ph {};
     PacketRecord pr(ph);
-    constexpr size_t requested = 10;
+    const std::vector<uint8_t> reference = {1,2,3,4,5,6,7,8,9,10};
+    const uint32_t requested = reference.size();
 
-    auto mock_read_all_bytes = [&requested] (FILE* stream, size_t count, std::vector<uint8_t> &out) {
+    auto mock_read_all_bytes = [&requested, &reference] (FILE* stream, 
+        size_t count, std::vector<uint8_t> &out) {
         EXPECT(requested == count, "unexpected read count");
         out.resize(requested);
-        out.assign({1,2,3,4,5,6,7,8,9,10});
+        out = reference;
     };
 
     size_t header_stream_pos = 0;
-    const std::array<uint32_t, 4> packet_header_stream = {
-        0,
-        0,
-        reorder_u32(requested),
-        0,
-    };
+    MockPacketHeader packet_header_stream = {0, 0, requested,0};
 
-    auto mock_read_whole_header = [&packet_header_stream, &header_stream_pos] (FILE* stream) -> uint32_t {
+    auto mock_read_whole_header = [&packet_header_stream, &header_stream_pos]
+        (FILE* stream) -> uint32_t {
         auto val = packet_header_stream.at(header_stream_pos);
         header_stream_pos += 1;
         return val;
@@ -257,7 +230,7 @@ static void test_packet_get_raw_data_on_full_data() {
     auto res = pr.raw_data();
     EXPECT(!pr.is_incomplete(), "Should be marked as complete");
     EXPECT(res.size() == requested, "Returned exactly how much asked");    
-    EXPECT(res == std::vector<uint8_t>({1,2,3,4,5,6,7,8,9,10}), "Contents as expected");
+    EXPECT(res == reference, "Contents as expected");
 }
 
 static void test_dump_short_packet() {
@@ -265,22 +238,19 @@ static void test_dump_short_packet() {
     PacketRecord pr(ph);
     const std::vector<uint8_t> reference = {
         0xca, 0xfe, 0xba, 0xbe,  0x31, 0x41, 0x59, 0x26};
-    const size_t requested = reference.size();
+    const uint32_t requested = reference.size();
 
-    auto mock_read_all_bytes = [&requested, &reference] (FILE* stream, size_t count, std::vector<uint8_t> &out) {
+    auto mock_read_all_bytes = [&requested, &reference] (FILE* stream,
+        size_t count, std::vector<uint8_t> &out) {
         EXPECT(requested == count, "unexpected read count");
         out = reference;
     };
 
     size_t header_stream_pos = 0;
-    const std::array<uint32_t, 4> packet_header_stream = {
-        0,
-        0,
-        reorder_u32(requested),
-        0,
-    };
+    MockPacketHeader packet_header_stream = {0, 0, requested, 0};
 
-    auto mock_read_whole_header = [&packet_header_stream, &header_stream_pos] (FILE* stream) -> uint32_t {
+    auto mock_read_whole_header = [&packet_header_stream, &header_stream_pos] 
+        (FILE* stream) -> uint32_t {
         auto val = packet_header_stream.at(header_stream_pos);
         header_stream_pos += 1;
         return val;
@@ -288,14 +258,13 @@ static void test_dump_short_packet() {
 
     pr.parse_header(mock_read_whole_header, nullptr); // inject captured_length
     pr.read_raw_data(mock_read_all_bytes, nullptr);
-    const std::string ref_dump = "ca fe ba be 31 41 59 26";
+    const string ref_dump = "ca fe ba be 31 41 59 26";
     auto dump_text = pr.dump();
     if (dump_text != ref_dump) {
         std::cout << "Expected: " << ref_dump << "\n"; 
         std::cout << "Got     : " << dump_text << "\n";
         FAIL("Dumped string difference");
     }
-
 }
 
 int main() {
