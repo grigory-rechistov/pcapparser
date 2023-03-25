@@ -34,7 +34,7 @@ int main() {
     // printf("dump: %s\n", ph.dump().c_str());
 
     PacketRecord pr(ph);
-    pr.parse(read_input_u32, in);
+    pr.parse_header(read_input_u32, in);
     pr.read_raw_data(read_input_buffer, in);
 
     fclose(out);

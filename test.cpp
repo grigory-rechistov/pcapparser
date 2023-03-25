@@ -157,7 +157,7 @@ static void test_parse_packet_record_on_empty_header_returns_incomplete() {
     ParsedHeader ph {};
     PacketRecord pr(ph);
     try {
-        pr.parse(mock_read_truncated_header, nullptr);
+        pr.parse_header(mock_read_truncated_header, nullptr);
     } catch (const TruncatedInput) {
         FAIL("Should turn TruncatedInput to incomplete");
     } catch (...) {
@@ -187,7 +187,7 @@ static void test_parse_packet_record_handles_microseconds() {
     ParsedHeader h = {.is_time_in_ns = false};
     
     PacketRecord pr(h);
-    pr.parse(mock_read_whole_header, nullptr);
+    pr.parse_header(mock_read_whole_header, nullptr);
     EXPECT(!pr.is_incomplete(),"Should be marked as complete");
     auto ts = pr.timestamp();
     EXPECT(ts.s == 5555, "Seconds are preserved"); 
@@ -220,7 +220,7 @@ static void test_packet_get_raw_data_on_truncated_data() {
         return val;
     };
 
-    pr.parse(mock_read_whole_header, nullptr); // inject captured_length
+    pr.parse_header(mock_read_whole_header, nullptr); // inject captured_length
     pr.read_raw_data(mock_read_insufficient_bytes, nullptr);
     auto res = pr.raw_data();
     EXPECT(pr.is_incomplete(), "Should be marked as incomplete");
@@ -252,7 +252,7 @@ static void test_packet_get_raw_data_on_full_data() {
         return val;
     };
 
-    pr.parse(mock_read_whole_header, nullptr); // inject captured_length
+    pr.parse_header(mock_read_whole_header, nullptr); // inject captured_length
     pr.read_raw_data(mock_read_all_bytes, nullptr);
     auto res = pr.raw_data();
     EXPECT(!pr.is_incomplete(), "Should be marked as complete");

@@ -12,7 +12,7 @@ PacketRecord::PacketRecord(const ParsedHeader &ph): incomplete(false), ts{},
     }
 };
 
-void PacketRecord::parse(ReadDword dword_reader, FILE *f) {
+void PacketRecord::parse_header(ReadDword dword_reader, FILE *f) {
 
     try {
         uint32_t full_seconds = reorder_u32(dword_reader(f));

@@ -21,7 +21,7 @@ class PacketRecord {
     public:
     PacketRecord(const ParsedHeader &ph);
     bool is_incomplete() {return incomplete;}
-    void parse(ReadDword dword_reader, FILE *f);
+    void parse_header(ReadDword dword_reader, FILE *f);
     timestamp_t timestamp();
     void read_raw_data(FillBuffer byte_filler, FILE *f);
     const std::vector<uint8_t> raw_data();
