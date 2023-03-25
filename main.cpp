@@ -1,5 +1,5 @@
 // entrypoint for the main converter
-// it takes stdin and gives stdout
+// It takes stdin and gives stdout
 #include <cstdio>
 #include <unistd.h>
 #include <cstdint>
@@ -31,12 +31,15 @@ int main() {
     
     ParsedHeader ph = parse_header(read_input_u32, in);
 
-    // printf("dump: %s\n", ph.dump().c_str());
-
-    PacketRecord pr(ph);
-    pr.parse_header(read_input_u32, in);
-    pr.read_raw_data(read_input_buffer, in);
-
+    while (true) {
+        PacketRecord pr(ph);
+        pr.parse_header(read_input_u32, in);
+        pr.read_raw_data(read_input_buffer, in);
+        if (pr.is_incomplete()) {
+            break;
+        }
+        printf("%s\n", pr.dump().c_str());
+    }
     fclose(out);
     return 0;
 }
