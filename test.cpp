@@ -154,7 +154,8 @@ static void test_parsed_header_is_properly_dumped() {
 }
 
 static void test_parse_packet_record_on_empty_header_returns_incomplete() {
-    PacketRecord pr;
+    ParsedHeader ph {};
+    PacketRecord pr(ph);
     try {
         pr.parse(mock_read_truncated_header, nullptr);
     } catch (const TruncatedInput) {
@@ -182,7 +183,10 @@ static void test_parse_packet_record_handles_microseconds() {
         return val;
     };
 
-    PacketRecord pr;
+
+    ParsedHeader h = {.is_time_in_ns = false};
+    
+    PacketRecord pr(h);
     pr.parse(mock_read_whole_header, nullptr);
     EXPECT(!pr.is_incomplete(),"Should be marked as complete");
     auto ts = pr.timestamp();
