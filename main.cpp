@@ -20,13 +20,11 @@ auto read_input_u32(FILE* stream) -> uint32_t {
     return res;
 }
 
-
 auto read_input_buffer(FILE* stream, size_t count, std::vector<uint8_t> &out) {
     assert(out.size() >= count);
     auto actual = fread(out.data(), 1, count, stream);
     out.resize(actual);
 }
-
 
 int main() {
     FILE *const in = fdopen(dup(fileno(stdin)), "rb");
