@@ -195,6 +195,38 @@ static void test_parse_packet_record_handles_microseconds() {
 
 }
 
+static void test_packet_get_raw_data_on_truncated_data() {
+    ParsedHeader ph {};
+    PacketRecord pr(ph);
+    constexpr size_t requested = 10;
+
+    auto mock_read_insufficient_bytes = [&requested] (FILE* stream, size_t count, std::vector<uint8_t> &out) {
+        
+        out.resize(requested - 1);
+        // out.at(0) = 0x11;
+    };
+
+    size_t header_stream_pos = 0;
+    const std::array<uint32_t, 4> packet_header_stream = {
+        0,
+        0,
+        reorder_u32(requested),
+        0,
+    };
+
+    auto mock_read_whole_header = [&packet_header_stream, &header_stream_pos] (FILE* stream) -> uint32_t {
+        auto val = packet_header_stream.at(header_stream_pos);
+        header_stream_pos += 1;
+        return val;
+    };
+
+    pr.parse(mock_read_whole_header, nullptr); // inject captured_length
+    pr.read_raw_data(mock_read_insufficient_bytes, nullptr);
+    auto res = pr.raw_data();
+    EXPECT(pr.is_incomplete(), "Should be marked as incomplete");
+    EXPECT(res.size() < requested, "Returned fewer octets than asked");
+}
+
 int main() {
     test_parse_header_on_empty_should_throw();
     test_parse_header_on_bad_magic_should_throw();
@@ -205,5 +237,6 @@ int main() {
     test_parsed_header_is_properly_dumped();
     test_parse_packet_record_on_empty_header_returns_incomplete();
     test_parse_packet_record_handles_microseconds();
+    test_packet_get_raw_data_on_truncated_data();
     return 0;
 }

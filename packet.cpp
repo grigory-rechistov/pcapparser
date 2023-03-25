@@ -3,7 +3,8 @@
 #include "exc.h"
 
 
-PacketRecord::PacketRecord(const ParsedHeader &ph): incomplete(false), ts{} {
+PacketRecord::PacketRecord(const ParsedHeader &ph): incomplete(false), ts{}, 
+    data{}, packet_length{} {
     if (ph.is_time_in_ns) {
         sub_sec_factor = 1;
     } else {
@@ -20,6 +21,7 @@ void PacketRecord::parse(ReadDword dword_reader, FILE *f) {
         uint32_t original_length = reorder_u32(dword_reader(f));
         ts.s = full_seconds;
         ts.ns = sub_seconds * sub_sec_factor;
+        packet_length = captured_length; // TODO validate against snap_len and original_length
     } catch (const TruncatedInput &e) {
         incomplete = true;
     }
@@ -28,4 +30,15 @@ void PacketRecord::parse(ReadDword dword_reader, FILE *f) {
 
 timestamp_t PacketRecord::timestamp() {
     return ts;
+}
+
+void PacketRecord::read_raw_data(FillBuffer byte_filler, FILE *f) {
+    byte_filler(f, packet_length, data);
+    if (data.size() < packet_length) {
+        incomplete = true;
+    }
+}
+
+const std::vector<uint8_t> PacketRecord::raw_data() {
+    return data;
 }
