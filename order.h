@@ -7,6 +7,8 @@ class OrderBookSnapshot {
     bool valid;
     uint32_t MsgSeqNum;
     uint16_t MsgSize;
+    uint16_t MsgFlags;
+    uint64_t SendingTime;
 
     public:
     OrderBookSnapshot() = delete;

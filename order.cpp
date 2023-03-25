@@ -15,8 +15,8 @@ OrderBookSnapshot::OrderBookSnapshot(const std::vector<uint8_t> &payload):
     // Borderline undefined behavior ensues
     MsgSeqNum = *reinterpret_cast<const uint32_t*>(p);
     MsgSize = *reinterpret_cast<const uint16_t*>(p + 4);
-
-
+    MsgFlags = *reinterpret_cast<const uint16_t*>(p + 6);
+    SendingTime = *reinterpret_cast<const uint64_t*>(p + 8);
 
     valid = true;
 }
@@ -37,6 +37,10 @@ std::string OrderBookSnapshot::dump() {
                        "  Marker data packet header\n"
                        "    MsgSeqNum %#x\n"
                        "    MsgSize %#x\n"
-                       , MsgSeqNum, (unsigned)MsgSize);
+                       "    MsgFlags %#x\n"
+                       "    SendingTime %ld\n"
+                       "  SBE Header\n"
+                       , MsgSeqNum, (unsigned)MsgSize, (unsigned)MsgFlags,
+                         SendingTime);
     return std::string(buf);
 }
