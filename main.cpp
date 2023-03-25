@@ -2,6 +2,7 @@
 // It takes stdin and gives stdout
 // Compile with RAW_MODE defined to make it output binary instead of hexadecimal
 #define RAW_MODE 1
+#define UDP_HEADER_OFFSET 0 // set to 42 to exclude Ethernet/IPv4/UDP preamble
 
 #include <cstdio>
 #include <unistd.h>
@@ -41,7 +42,7 @@ static bool decode_packet(ParsedHeader &ph, FILE *const in, FILE *const out) {
         }
 #ifdef RAW_MODE
         auto rd = pr.raw_data();
-        fwrite(rd.data(), rd.size(), 1, out);
+        fwrite(rd.data()+UDP_HEADER_OFFSET, rd.size()-UDP_HEADER_OFFSET, 1, out);
 #else
         printf("%s\n", pr.dump().c_str());
 #endif
