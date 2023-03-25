@@ -8,7 +8,7 @@ parser-test: parsedheader.cpp packet.cpp order.cpp test.cpp
 	${CXX} -g $^ -o $@
 	./$@
 
-pcapparser: parsedheader.cpp packet.cpp main.cpp
+pcapparser: parsedheader.cpp packet.cpp pcapparser.cpp
 	${CXX} -g $^ -o $@
 
 clean:
