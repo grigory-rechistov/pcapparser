@@ -2,6 +2,10 @@
 #pragma once
 #include <cstdint>
 #include <string>
+#include<functional>
+#include <cstdio>
+
+using ReadDword = std::function <uint32_t (FILE* stream)>;
 
 struct ParsedHeader {
     bool is_time_in_ns;
@@ -13,4 +17,5 @@ struct ParsedHeader {
     uint32_t unparsed_link_type; // TODO extract FCS if needed
 
     std::string dump();
+    void parse_header(ReadDword dword_reader, FILE *f);
 };

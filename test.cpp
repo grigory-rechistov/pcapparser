@@ -27,8 +27,9 @@ static void test_parse_header_on_empty_should_throw() {
     auto mock_read_truncated_header = [] (FILE* stream) ->uint32_t {
         throw TruncatedInput();};
     bool truncation_detected = false;
+    ParsedHeader ph{};
     try {
-        parse_header(mock_read_truncated_header, nullptr);
+        ph.parse_header(mock_read_truncated_header, nullptr);
     } catch (const TruncatedInput) {
         truncation_detected = true;
     } catch (...) {
@@ -42,8 +43,9 @@ static void test_parse_header_on_bad_magic_should_throw() {
         return 0xbaadc0de;
     };
     bool bad_magic_detected = false;
+    ParsedHeader ph{};
     try {
-        parse_header(mock_read_bad_magic_header, nullptr);
+        ph.parse_header(mock_read_bad_magic_header, nullptr);
     } catch (const BadMagic) {
         bad_magic_detected = true;
     } catch (...) {
@@ -65,7 +67,8 @@ static void test_parse_header_reads_whole_header() {
         return val;
     };
 
-    parse_header(mock_read_whole_header, nullptr);
+    ParsedHeader ph{};
+    ph.parse_header(mock_read_whole_header, nullptr);
     EXPECT(stream_pos == header_size_in_dwords,
         "parse_header() should read whole header");
 }
@@ -83,8 +86,9 @@ static void test_parse_header_on_zero_snap_len_throws() {
     };
 
     bool bad_snap_len_detected = false;
+    ParsedHeader ph{};
     try {
-        parse_header(mock_read_bad_snap_len, nullptr);
+        ph.parse_header(mock_read_bad_snap_len, nullptr);
     } catch (const ValueOutOfRange) {
         bad_snap_len_detected = true;
     } catch (...) {
@@ -111,7 +115,8 @@ static void test_header_values_land_in_correct_places() {
         return val;
     };
 
-    auto ph = parse_header(mock_read_whole_header, nullptr);
+    ParsedHeader ph{};
+    ph.parse_header(mock_read_whole_header, nullptr);
     EXPECT(ph.is_time_in_ns, "is_time_in_ns");
     EXPECT(ph.major_version == 2, "major_version");
     EXPECT(ph.minor_version == 4, "minor_version");

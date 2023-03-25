@@ -30,7 +30,8 @@ int main() {
     FILE *const in = fdopen(dup(fileno(stdin)), "rb");
     FILE *const out = fdopen(dup(fileno(stdout)), "wb");
     
-    ParsedHeader ph = parse_header(read_input_u32, in);
+    ParsedHeader ph{};
+    ph.parse_header(read_input_u32, in);
 
     while (true) {
         PacketRecord pr(ph);
