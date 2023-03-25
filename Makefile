@@ -1,5 +1,6 @@
 
 .PHONY: test
+.PRECIOUS: parser-test
 test: parser-test pcapparser
 
 # TODO set proper dependencies from headers
