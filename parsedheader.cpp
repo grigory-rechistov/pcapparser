@@ -29,7 +29,6 @@ void ParsedHeader::parse_header( ReadDword dword_reader, FILE *f) {
     unparsed_link_type = fcs_f_link_type;
 }
 
-
 std::string ParsedHeader::dump() {
     using s = std::string;
     using std::to_string;

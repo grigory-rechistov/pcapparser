@@ -1,6 +1,5 @@
-//
+// Individual packets after the file header 
 #pragma once
-
 #include <functional>
 #include <cstdint>
 #include <cstdio>
