@@ -1,5 +1,8 @@
 // entrypoint for the main converter
 // It takes stdin and gives stdout
+// Compile with RAW_MODE defined to make it output binary instead of hexadecimal
+#define RAW_MODE 1
+
 #include <cstdio>
 #include <unistd.h>
 #include <cstdint>
@@ -38,7 +41,12 @@ int main() {
         if (pr.is_incomplete()) {
             break;
         }
+#ifdef RAW_MODE
+        auto rd = pr.raw_data();
+        fwrite(rd.data(), rd.size(), 1, out);
+#else
         printf("%s\n", pr.dump().c_str());
+#endif
     }
     fclose(out);
     return 0;
