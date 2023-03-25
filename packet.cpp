@@ -22,6 +22,7 @@ void PacketRecord::parse(ReadDword dword_reader, FILE *f) {
         ts.s = full_seconds;
         ts.ns = sub_seconds * sub_sec_factor;
         packet_length = captured_length; // TODO validate against snap_len and original_length
+        data.resize(captured_length);
     } catch (const TruncatedInput &e) {
         incomplete = true;
     }
