@@ -1,4 +1,4 @@
-// Entrypoint for the main converter
+// Entrypoint tool that peels the PCAP headers from input
 // It takes stdin and gives stdout
 // Compile with RAW_MODE defined to make it output binary instead of hexadecimal
 #define RAW_MODE 1
