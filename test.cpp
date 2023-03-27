@@ -39,7 +39,7 @@ static void test_parse_header_on_empty_should_throw() {
     ParsedHeader ph{};
     try {
         ph.parse_header(mock_read_truncated_header, nullptr);
-    } catch (const TruncatedInput) {
+    } catch (const TruncatedInput&) {
         truncation_detected = true;
     } catch (...) {
         FAIL("Unexpected exception thrown");
@@ -55,7 +55,7 @@ static void test_parse_header_on_bad_magic_should_throw() {
     ParsedHeader ph{};
     try {
         ph.parse_header(mock_read_bad_magic_header, nullptr);
-    } catch (const BadMagic) {
+    } catch (const BadMagic&) {
         bad_magic_detected = true;
     } catch (...) {
         FAIL("Unexpected exception thrown");
@@ -98,7 +98,7 @@ static void test_parse_header_on_zero_snap_len_throws() {
     ParsedHeader ph{};
     try {
         ph.parse_header(mock_read_bad_snap_len, nullptr);
-    } catch (const ValueOutOfRange) {
+    } catch (const ValueOutOfRange&) {
         bad_snap_len_detected = true;
     } catch (...) {
         FAIL("Unexpected exception thrown");
@@ -156,7 +156,7 @@ static void test_parse_packet_record_on_empty_header_returns_incomplete() {
     PacketRecord pr(ph);
     try {
         pr.parse_header(mock_read_truncated_header, nullptr);
-    } catch (const TruncatedInput) {
+    } catch (const TruncatedInput&) {
         FAIL("Should turn TruncatedInput to incomplete");
     } catch (...) {
         FAIL("Unexpected exception thrown");
