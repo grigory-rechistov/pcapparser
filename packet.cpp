@@ -10,6 +10,12 @@ PacketRecord::PacketRecord(const ParsedHeader &ph): incomplete(false), ts{},
     }
 };
 
+static inline uint32_t determine_packet_length(uint32_t captured_length,
+    uint32_t original_length) {
+    // TODO validate against snap_len and original_length
+    return captured_length;
+}
+
 void PacketRecord::parse_header(ReadDword dword_reader, FILE *f) {
 
     try {
@@ -19,7 +25,7 @@ void PacketRecord::parse_header(ReadDword dword_reader, FILE *f) {
         uint32_t original_length = dword_reader(f);
         ts.s = full_seconds;
         ts.ns = sub_seconds * sub_sec_factor;
-        packet_length = captured_length; // TODO validate against snap_len and original_length
+        packet_length = determine_packet_length(captured_length, original_length);
         data.resize(captured_length);
     } catch (const TruncatedInput &e) {
         incomplete = true;

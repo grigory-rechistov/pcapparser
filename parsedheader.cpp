@@ -7,6 +7,10 @@
 static constexpr uint32_t magic_sec_ms = 0xA1B2C3D4;
 static constexpr uint32_t magic_sec_ns = 0xA1B23C4D;
 
+static inline void check_reserved(uint32_t r1, uint32_t r2) {
+    // TODO if wanted, report non-zero reserved fields
+}
+
 void ParsedHeader::parse_header( ReadDword dword_reader, FILE *f) {
     uint32_t magic = dword_reader(f);
     if (magic != magic_sec_ms && magic != magic_sec_ns) {
@@ -16,6 +20,7 @@ void ParsedHeader::parse_header( ReadDword dword_reader, FILE *f) {
     uint32_t major_minor = dword_reader(f);
     uint32_t reserved1 = dword_reader(f);
     uint32_t reserved2 = dword_reader(f);
+    check_reserved(reserved1, reserved2);
     uint32_t snap_len_raw = dword_reader(f);
     if (snap_len_raw == 0) {
         throw ValueOutOfRange();
