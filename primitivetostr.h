@@ -13,7 +13,7 @@ static inline const std::string Int64NulltoStr(uint64_t v) {
         std::string sign(signed_v < 0? "-": "");
         int64_t magnitude = std::abs(signed_v); 
         char buf[20];
-        snprintf(buf, sizeof(buf) -1, "%#lx", magnitude);
+        snprintf(buf, sizeof(buf)-1, "%#lx", magnitude);
         return sign + std::string(buf);
     }
 }

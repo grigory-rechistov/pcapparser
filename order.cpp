@@ -37,7 +37,7 @@ std::string OrderBookSnapshot::dump() {
 
     // TODO Pretty print remaining types, such as Decimal5NULL, MDEntryType
     // TODO for signed primitives, add formatters that represent them with "+/-" 
-    snprintf(buf, sizeof(buf) -1,
+    snprintf(buf, sizeof(buf)-1,
                        "OrderBookSnapshot\n"
                        "  SecurityID %#x\n"
                        "  LastMsgSeqNumProcessed %#x\n"
