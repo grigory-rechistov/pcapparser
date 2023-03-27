@@ -7,7 +7,7 @@
 #include "exc.h"
 #include "packet.h"
 #include "timestamp.h"
-#include "primitivetostr.h"
+#include "tostr.h"
 
 using std::string;
 
