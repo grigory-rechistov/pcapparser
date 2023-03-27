@@ -11,7 +11,7 @@ OrderBookSnapshot
   MDEntrySize NULL (0x8000000000000000)
   TradeId NULL (0x8000000000000000)
   MDFlags 0
-  MDEntryType 0x4a
+  MDEntryType Empty Book
 
 OrderBookSnapshot
   SecurityID 0x2f7e17
@@ -26,7 +26,7 @@ OrderBookSnapshot
   MDEntrySize NULL (0x8000000000000000)
   TradeId NULL (0x8000000000000000)
   MDFlags 0
-  MDEntryType 0x4a
+  MDEntryType Empty Book
 
 OrderBookSnapshot
   SecurityID 0x2e9e1c
@@ -41,7 +41,7 @@ OrderBookSnapshot
   MDEntrySize NULL (0x8000000000000000)
   TradeId NULL (0x8000000000000000)
   MDFlags 0
-  MDEntryType 0x4a
+  MDEntryType Empty Book
 
 OrderBookSnapshot
   SecurityID 0x2f7e16
@@ -56,7 +56,7 @@ OrderBookSnapshot
   MDEntrySize NULL (0x8000000000000000)
   TradeId NULL (0x8000000000000000)
   MDFlags 0
-  MDEntryType 0x4a
+  MDEntryType Empty Book
 
 OrderBookSnapshot
   SecurityID 0x2a9cbd
@@ -71,7 +71,7 @@ OrderBookSnapshot
   MDEntrySize NULL (0x8000000000000000)
   TradeId NULL (0x8000000000000000)
   MDFlags 0
-  MDEntryType 0x4a
+  MDEntryType Empty Book
 
 OrderBookSnapshot
   SecurityID 0x2a9cc0
@@ -86,7 +86,7 @@ OrderBookSnapshot
   MDEntrySize NULL (0x8000000000000000)
   TradeId NULL (0x8000000000000000)
   MDFlags 0
-  MDEntryType 0x4a
+  MDEntryType Empty Book
 
 OrderBookSnapshot
   SecurityID 0x2a9cc1
@@ -101,7 +101,7 @@ OrderBookSnapshot
   MDEntrySize NULL (0x8000000000000000)
   TradeId NULL (0x8000000000000000)
   MDFlags 0
-  MDEntryType 0x4a
+  MDEntryType Empty Book
 
 OrderBookSnapshot
   SecurityID 0x2f918b
@@ -116,5 +116,5 @@ OrderBookSnapshot
   MDEntrySize NULL (0x8000000000000000)
   TradeId NULL (0x8000000000000000)
   MDFlags 0
-  MDEntryType 0x4a
+  MDEntryType Empty Book
 

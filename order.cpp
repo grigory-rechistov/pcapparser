@@ -52,7 +52,7 @@ std::string OrderBookSnapshot::dump() {
                        "  MDEntrySize %s\n"
                        "  TradeId %s\n"
                        "  MDFlags %#lx\n"
-                       "  MDEntryType %#x\n",
+                       "  MDEntryType %s\n",
                         msg17.SecurityID,
                         msg17.LastMsgSeqNumProcessed,
                         msg17.RptSeq,
@@ -67,7 +67,7 @@ std::string OrderBookSnapshot::dump() {
                         Int64NulltoStr(msg17.TradeId).c_str(),
                         msg17.MDFlags,
 
-                        (unsigned)msg17.MDEntryType
+                        MDEntryTypetoStr(msg17.MDEntryType).c_str()
     );
     return std::string(buf);
 }
