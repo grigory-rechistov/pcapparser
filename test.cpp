@@ -327,6 +327,12 @@ static void test_Int64NulltoStr() {
         "Positive representation");
 }
 
+static void test_MDEntryTypetoStr() {
+    EXPECT_COMPARE(MDEntryTypetoStr('J'),
+        std::string("Empty Book"),
+        "Empty book representation");
+}
+
 int main() {
     test_parse_header_on_empty_should_throw();
     test_parse_header_on_bad_magic_should_throw();
@@ -341,5 +347,6 @@ int main() {
     test_dump_short_packet();
     test_packet_get_payload_properly_offset();
     test_Int64NulltoStr();
+    test_MDEntryTypetoStr();
     return 0;
 }

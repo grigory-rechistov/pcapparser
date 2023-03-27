@@ -17,3 +17,12 @@ static inline const std::string Int64NulltoStr(uint64_t v) {
         return sign + std::string(buf);
     }
 }
+
+static inline const std::string MDEntryTypetoStr(uint8_t v) {
+    switch (v) {
+        case '0': return std::string("Bid");
+        case '1': return std::string("Ask");
+        case 'J': return std::string("Empty Book");
+        default: return std::string("invalid");
+    };
+}
