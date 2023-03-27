@@ -322,6 +322,9 @@ static void test_Int64NulltoStr() {
     EXPECT_COMPARE(Int64NulltoStr(0),
         std::string("0"),
         "Zero representation");
+    EXPECT_COMPARE(Int64NulltoStr(0xacedbabe),
+        std::string("0xacedbabe"),
+        "Positive representation");
 }
 
 int main() {
