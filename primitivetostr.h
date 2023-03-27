@@ -1,7 +1,8 @@
-// Pretty printing of primitive types
+// Pretty print formatting of more complex types
 #pragma once
 #include <string>
 #include <cstdint>
+#include <cstring>
 
 static inline const std::string Int64NulltoStr(uint64_t v) {
     constexpr uint64_t null_repr = 0x8000000000000000ULL;
@@ -9,6 +10,10 @@ static inline const std::string Int64NulltoStr(uint64_t v) {
         return std::string("NULL (0x8000000000000000)");
     } else {
         int64_t signed_v = (int64_t)v;
-        return std::string("lol");
+        std::string sign(signed_v < 0? "-": "");
+        int64_t magnitude = std::abs(signed_v); 
+        char buf[20];
+        snprintf(buf, sizeof(buf) -1, "%#lx", magnitude);
+        return sign + std::string(buf);
     }
 }
