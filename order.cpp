@@ -3,6 +3,7 @@
 #include <cstring>
 #include <cstddef>
 #include <cassert>
+#include "tostr.h"
 
 static constexpr uint8_t OrderBookSnapshotMarker = 'J';
 static constexpr size_t OrderBookSnapshotRecognizedLength = 92;
@@ -45,11 +46,11 @@ std::string OrderBookSnapshot::dump() {
                        "  ExchangeTradingSessionID %#x\n"
                        "  NoMDEntries.block_length %#x\n"
                        "  NoMDEntries.number_in_group %#x\n"
-                       "  MDEntryID %#lx\n"
+                       "  MDEntryID %s\n"
                        "  TransactTime %ld\n"
                        "  MDEntryPx %#lx\n"
-                       "  MDEntrySize %#lx\n"
-                       "  TradeId %#lx\n"
+                       "  MDEntrySize %s\n"
+                       "  TradeId %s\n"
                        "  MDFlags %#lx\n"
                        "  MDEntryType %#x\n",
                         msg17.SecurityID,
@@ -59,11 +60,11 @@ std::string OrderBookSnapshot::dump() {
                         (unsigned)msg17.NoMDEntries.block_length,
                         (unsigned)msg17.NoMDEntries.number_in_group,
                         
-                        msg17.MDEntryID,
+                        Int64NulltoStr(msg17.MDEntryID).c_str(),
                         msg17.TransactTime,
                         msg17.MDEntryPx,
-                        msg17.MDEntrySize,
-                        msg17.TradeId,
+                        Int64NulltoStr(msg17.MDEntrySize).c_str(),
+                        Int64NulltoStr(msg17.TradeId).c_str(),
                         msg17.MDFlags,
 
                         (unsigned)msg17.MDEntryType
