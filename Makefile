@@ -3,13 +3,15 @@
 .PRECIOUS: parser-test
 test: parser-test pcapparser ref-test simbadecoder
 
+CFLAGS = -Wall -Werror -g
+
 # TODO set proper dependencies from headers
 parser-test: parsedheader.cpp packet.cpp order.cpp io.cpp test.cpp 
-	${CXX} -g $^ -o $@
+	${CXX} ${CFLAGS} $^ -o $@
 	./$@
 
 pcapparser: parsedheader.cpp packet.cpp  io.cpp pcapparser.cpp
-	${CXX} -g $^ -o $@
+	${CXX} ${CFLAGS} $^ -o $@
 
 clean:
 	rm -f parser-test pcapparser
@@ -20,4 +22,4 @@ ref-test: pcapparser simbadecoder
 	./simbadecoder < ref/first_ten.pcap | diff - ref/obs-txes.txt
 
 simbadecoder: parsedheader.cpp packet.cpp order.cpp io.cpp simbadecoder.cpp
-	${CXX} -g $^ -o $@
+	${CXX} ${CFLAGS} $^ -o $@
