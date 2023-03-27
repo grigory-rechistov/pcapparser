@@ -14,7 +14,7 @@ pcapparser: parsedheader.cpp packet.cpp  io.cpp pcapparser.cpp
 	${CXX} ${CFLAGS} $^ -o $@
 
 clean:
-	rm -f parser-test pcapparser
+	rm -f parser-test pcapparser simbadecoder
 
 # Test a small sample input to generate expected output 
 ref-test: pcapparser simbadecoder
