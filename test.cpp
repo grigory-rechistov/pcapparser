@@ -7,6 +7,7 @@
 #include "exc.h"
 #include "packet.h"
 #include "timestamp.h"
+#include "primitivetostr.h"
 
 using std::string;
 
@@ -17,6 +18,16 @@ using std::string;
 
 #define EXPECT(cond, reason) do {\
     if (!(cond)) { \
+        FAIL(reason); \
+    } \
+} while (0);
+
+#define EXPECT_COMPARE(got, exp, reason) do {\
+    const auto _got = (got); \
+    const auto _exp = (exp); \
+    if ((_got) != (_exp)) { \
+        std::cout << "Expected: " << _exp << "\n";  \
+        std::cout << "Got     : " << _got << "\n"; \
         FAIL(reason); \
     } \
 } while (0);
@@ -301,6 +312,11 @@ static void test_packet_get_payload_properly_offset() {
     EXPECT(res.at(0) == 0xff, "Contents as expected");
 }
 
+static void test_Int64NulltoStr() {
+    EXPECT_COMPARE(Int64NulltoStr(0x8000000000000000ULL),
+        std::string("NULL (0x8000000000000000)"),
+        "Null representation");
+}
 
 int main() {
     test_parse_header_on_empty_should_throw();
@@ -315,5 +331,6 @@ int main() {
     test_packet_get_raw_data_on_full_data();
     test_dump_short_packet();
     test_packet_get_payload_properly_offset();
+    test_Int64NulltoStr();
     return 0;
 }
